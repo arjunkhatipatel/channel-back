@@ -4,10 +4,7 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @Component
@@ -15,9 +12,12 @@ import java.util.Set;
 public class Channel {
     private String channelName;
     private String password;
-    private List<String> channelUsers = new ArrayList<>();
+    private Set<String> channelUsers = new HashSet<>();
     private List<String> channelMsg = new ArrayList<>();
     private Set<WebSocketSession> sessions = new HashSet<>();
+    // Map to store UUID to userName
+    private Map<String, String> sessionUserMap = new HashMap<>();
+
 
     public void setMsg(String msg) {
         channelMsg.add(msg);
@@ -27,7 +27,7 @@ public class Channel {
     public List<String> getChannelMsg() {
         return new ArrayList<>(channelMsg);
     }
-    
+
     public void addSession(WebSocketSession session) {
         sessions.add(session);
     }
@@ -40,7 +40,23 @@ public class Channel {
         return sessions.toArray(new WebSocketSession[0]);
     }
 
-    public WebSocketSession[] getAllMessages() {
-        return channelMsg.toArray(new WebSocketSession[0]);
+    public String getUserBySessionId(String sessionId) {
+        return sessionUserMap.get(sessionId);
     }
+
+    public void removeUser(String sessionId) {
+        String userName = sessionUserMap.remove(sessionId);
+        channelUsers.remove(userName);
+    }
+
+    // Add user to the channel and map their session ID (UUID) to their username
+    public void addUser(String userName, String sessionId) {
+        channelUsers.add(userName);
+        sessionUserMap.put(sessionId, userName);
+    }
+
+    public boolean userExists(String userName) {
+        return channelUsers.contains(userName);
+    }
+
 }

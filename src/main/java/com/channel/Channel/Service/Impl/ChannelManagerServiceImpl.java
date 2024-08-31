@@ -5,7 +5,9 @@ import com.channel.Channel.Service.ChannelManagerService;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -35,5 +37,9 @@ public class ChannelManagerServiceImpl implements ChannelManagerService {
 
     public Map<String, Channel> getChannels() {
         return channels;
+    }
+
+    public Set<Channel> getAllChannels() {
+        return new HashSet<>(channels.values());
     }
 }
